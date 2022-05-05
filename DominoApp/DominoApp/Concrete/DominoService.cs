@@ -2,19 +2,21 @@
 using DominoApp.Models;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace DominoApp.Concrete
 {
     public class DominoService : IDominoService
     {
-        private static bool _chainIsDone = false;
+        private bool _chainIsDone = false;
+        private Chain _result = new();
 
-        public bool ValidateAndDisplay(IEnumerable<(int, int)> data)
+        public Chain GetChain(IEnumerable<(int, int)> data)
         {
             var collection = new StoneCollection(data);
             if (collection.Stones.Count == 0)
             {
-                return true;
+                return _result;
             }
 
             foreach (Stone stone in collection.Stones)
@@ -23,12 +25,11 @@ namespace DominoApp.Concrete
                 ContinueChain(stone, chain.DeepCopy(), collection.DeepCopy());
                 if (_chainIsDone)
                 {
-                    _chainIsDone = false;
-                    return true;
+                    return _result;
                 }
             }
 
-            return false;
+            return _result;
         }
 
         public List<(int, int)> ParseInputs()
@@ -51,7 +52,26 @@ namespace DominoApp.Concrete
             return result;
         }
 
-        private static void ContinueChain(Stone currentStone, Chain chain, StoneCollection collection)
+        public void Display(Chain chain)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Result:");
+
+            var result = new StringBuilder();
+            foreach(var stone in chain.Nodes)
+            {
+                if(stone == Stone.Invalid)
+                {
+                    Console.WriteLine("Chain not found");
+                    return;
+                }
+                result.Append("[" + stone.Dots.LeftSide + "|" + stone.Dots.RightSide + "] ");
+            }
+
+            Console.WriteLine(result.ToString());
+        }
+
+        private void ContinueChain(Stone currentStone, Chain chain, StoneCollection collection)
         {
             if (_chainIsDone)
             {
@@ -63,6 +83,7 @@ namespace DominoApp.Concrete
             if (collection.Stones.Count == 0 && chain.EndsMatch)
             {
                 _chainIsDone = true;
+                _result = chain;
             }
                
             List<Stone> possibleNextStones = collection.AllMatches(chain.OuterLeftDots, chain.OuterRightDots);

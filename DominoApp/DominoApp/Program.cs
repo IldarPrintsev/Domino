@@ -18,7 +18,8 @@ namespace DominoApp
 
             var service = provider.GetRequiredService<IDominoService>();
             var initialData = service.ParseInputs();
-            var result = service.Calculate(initialData);
+            var result = service.GetChain(initialData);
+            service.Display(result);
 
 
             return host.RunAsync();

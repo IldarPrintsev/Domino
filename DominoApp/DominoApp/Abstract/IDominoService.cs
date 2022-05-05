@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using DominoApp.Models;
+using System.Collections.Generic;
 
 namespace DominoApp.Abstract
 {
@@ -6,6 +7,8 @@ namespace DominoApp.Abstract
     {
         List<(int, int)> ParseInputs();
 
-        bool ValidateAndDisplay(IEnumerable<(int, int)> data);
+        Chain GetChain(IEnumerable<(int, int)> data);
+
+        void Display(Chain chain);
     }
 }
