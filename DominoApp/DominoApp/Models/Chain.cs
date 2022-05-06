@@ -6,32 +6,24 @@ namespace DominoApp.Models
     {
         public Chain()
         {
-            CurrentLeftStone = Stone.Invalid;
-            CurrentRightStone = Stone.Invalid;
             Nodes = new LinkedList<Stone>(new List<Stone>{Stone.Invalid});
         }
 
-        private Chain(Stone leftStone, Stone rightStone)
+        private Chain(LinkedList<Stone> stones)
         {
-            CurrentLeftStone = leftStone;
-            CurrentRightStone = rightStone;
-            Nodes = new LinkedList<Stone>(new List<Stone> { leftStone, rightStone });
+            Nodes = new LinkedList<Stone>(stones);
         }
 
-        public Stone CurrentLeftStone { get; private set; }
-        public Stone CurrentRightStone { get; private set; }
-        public int OuterLeftDots { get => CurrentLeftStone.Dots.LeftSide; }
-        public int OuterRightDots { get => CurrentRightStone.Dots.RightSide; }
-        public bool EndsMatch { get => OuterLeftDots == OuterRightDots; }
+        public int OuterLeftDots { get => Nodes.First.Value.Dots.LeftSide; }
+        public int OuterRightDots { get => Nodes.Last.Value.Dots.RightSide; }
+        public bool EndsMatch { get => OuterLeftDots == OuterRightDots && OuterLeftDots != -1; }
         public LinkedList<Stone> Nodes { get; private set; }
 
         public bool AddNeighbor(Stone newStone)
         {
-            if (CurrentLeftStone == Stone.Invalid)
+            if (Nodes.Last.Value == Stone.Invalid)
             {
-                Nodes.AddFirst(new LinkedListNode<Stone>(newStone));
-                CurrentLeftStone = newStone;
-                CurrentRightStone = newStone;
+                Nodes.Last.Value = newStone;
                 return true;
             }
 
@@ -45,14 +37,12 @@ namespace DominoApp.Models
             return AddNeighborToLeft(newStone) || AddNeighborToRight(newStone);
         }
 
-        public Chain DeepCopy() =>
-            new(CurrentLeftStone.DeepCopy(), CurrentRightStone.DeepCopy());
+        public Chain DeepCopy() => new(Nodes);
 
         private bool AddNeighborToLeft(Stone newStone)
         {
-            if (StonesMatch(newStone, CurrentLeftStone))
+            if (StonesMatch(newStone, Nodes.First.Value))
             {
-                CurrentLeftStone = newStone;
                 Nodes.AddFirst(new LinkedListNode<Stone>(newStone));
                 return true;
             }
@@ -62,9 +52,8 @@ namespace DominoApp.Models
 
         private bool AddNeighborToRight(Stone newStone)
         {
-            if (StonesMatch(CurrentRightStone, newStone))
+            if (StonesMatch(Nodes.Last.Value, newStone))
             {
-                CurrentRightStone = newStone;
                 Nodes.AddLast(new LinkedListNode<Stone>(newStone));
                 return true;
             }

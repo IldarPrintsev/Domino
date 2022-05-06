@@ -19,9 +19,6 @@ namespace DominoApp.Models
 
         public List<Stone> Stones { get; } = new List<Stone>();
 
-        public bool HasStones { get => Stones.Count > 0; }
-
-
         public Stone Grab(Stone stone)
         {
             Stones.Remove(stone);

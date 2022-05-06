@@ -9,7 +9,7 @@ namespace DominoApp.UnitTests
         private DominoService service = new ();
 
         [Fact]
-        public void DominoServiceTest_Ok()
+        public void DominoServiceTest_True()
         {
             var data = new List<(int, int)>
             {
@@ -21,6 +21,31 @@ namespace DominoApp.UnitTests
             var result = service.GetChain(data);
 
             Assert.True(result.EndsMatch);
+        }
+
+        [Fact]
+        public void DominoServiceTest_False()
+        {
+            var data = new List<(int, int)>
+            {
+                (2, 1),
+                (2, 3),
+                (4, 5)
+            };
+
+            var result = service.GetChain(data);
+
+            Assert.False(result.EndsMatch);
+        }
+
+        [Fact]
+        public void DominoServiceTestEmpty_False()
+        {
+            var data = new List<(int, int)>();
+
+            var result = service.GetChain(data);
+
+            Assert.False(result.EndsMatch);
         }
     }
 }
